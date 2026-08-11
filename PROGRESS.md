@@ -25,6 +25,7 @@ Theo dõi những gì đã làm cho từng checkpoint trong [CHECKPOINTS.md](CHE
 - [x] `app/pii.py`: thêm pattern `passport` và `address_vn`.
 - [x] `validate_logs.py`: **100/100** (0 missing required, 0 missing enrichment, 10 unique correlation ID, 0 PII leak). Ghi nhận 2026-08-11.
 - [x] `python -m pytest -q`: 22 passed.
+- [x] **Bug tìm được lúc review lại (2026-08-11):** PII gửi qua `session_id` hoặc header `x-request-id` không bị redact (chỉ `payload`/`event` được xử lý) — xác nhận bằng test thực tế, điểm tụt còn 70/100. Đã fix `scrub_event` để duyệt toàn bộ field, test lại về 100/100. Commit `e8cc07c`, đã push.
 - [ ] **Còn thiếu (bạn tự làm):** chụp ảnh log có correlation ID, ảnh PII đã redact, lưu vào `submission/evidence/` theo yêu cầu Checkpoint 1 trong CHECKPOINTS.md.
 
 ## Checkpoint 2 — Metrics, traces và dashboard

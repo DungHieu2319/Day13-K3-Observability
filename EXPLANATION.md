@@ -44,8 +44,14 @@ merge_contextvars → add_log_level → TimeStamper → scrub_event → ... → 
 ### Vì sao dùng regex thay vì LLM/NER để phát hiện PII
 Regex: nhanh, deterministic (luôn cho cùng kết quả với cùng input), không tốn thêm chi phí gọi model, dễ audit (đọc pattern là biết chính xác nó bắt gì). Nhược điểm: cứng nhắc, dễ miss các dạng PII không theo format chuẩn (ví dụ tên riêng, địa chỉ viết tự do) — đây là lý do `validate_logs.py` chỉ kiểm tra được 4 loại PII cố định (email, phone, cccd, credit card), không đảm bảo 100% mọi loại PII đều bị bắt.
 
+### Bug thật đã tìm và fix trong lúc review lại bài
+Test thử gửi PII qua `session_id` (thay vì qua `message` như bình thường) và qua header `x-request-id` (client tự set) — phát hiện **cả 2 đều lọt qua, không bị redact**, vì bản đầu của `scrub_event` chỉ xử lý field `payload` và `event`. Xác nhận bằng `validate_logs.py`: điểm tụt còn 70/100 khi có email trong `session_id`. Fix: đổi `scrub_event` sang duyệt **toàn bộ field** trong `event_dict` (không chỉ 2 field cố định), áp `scrub_text` lên mọi string. Sau fix, test lại → 100/100.
+
+Bài học: PII có thể lọt vào log qua **bất kỳ field nào do client kiểm soát**, không chỉ nội dung message — kể cả field tưởng như "kỹ thuật" (session ID, request ID) cũng phải coi là input không tin cậy.
+
 ### Q&A dự kiến
 - *"Regex có thể miss trường hợp nào?"* → Địa chỉ viết không theo pattern chuẩn, tên riêng, số điện thoại quốc tế không phải VN, PII trong ảnh/file đính kèm (ngoài phạm vi lab).
+- *"Làm sao biết PII không lọt qua field nào khác ngoài message?"* → Đã tự test bằng cách gửi PII qua `session_id` và header `x-request-id`, phát hiện bug thật (xem trên) và đã fix — đây chính là lý do `scrub_event` giờ duyệt toàn bộ field thay vì chỉ 2 field cố định.
 - *"Tại sao PII check trong `validate_logs.py` lại độc lập với `app/pii.py`?"* → Đúng, `scripts/validate_logs.py` tự định nghĩa lại `PII_DETECTORS` riêng — đây là chủ đích của đề bài: validator đóng vai "người ngoài" kiểm tra kết quả cuối, không tin tưởng mù quáng vào logic redact của chính app (giống nguyên tắc kiểm thử độc lập).
 
 ---
