@@ -1,19 +1,19 @@
 alerts:
-  - name: TODO_alert_1
-    severity: TODO
-    condition: TODO
+  - name: high_latency_p95
+    severity: high
+    condition: p95(latency_ms) over 5m > 3000
     type: symptom-based
-    owner: TODO
+    owner: Dashboard, SLO & Alert
     runbook: docs/alerts.md#alert-1
-  - name: TODO_alert_2
-    severity: TODO
-    condition: TODO
+  - name: elevated_error_rate
+    severity: critical
+    condition: error_rate_pct over 5m > 2
     type: symptom-based
-    owner: TODO
+    owner: Dashboard, SLO & Alert
     runbook: docs/alerts.md#alert-2
-  - name: TODO_alert_3
-    severity: TODO
-    condition: TODO
+  - name: quality_score_drop
+    severity: medium
+    condition: mean(quality_score) over 15m < 0.75
     type: symptom-based
-    owner: TODO
+    owner: Dashboard, SLO & Alert
     runbook: docs/alerts.md#alert-3
