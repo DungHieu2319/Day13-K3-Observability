@@ -4,7 +4,7 @@
 
 - Tên nhóm: Gì Cũng Được
 - Repository URL: https://github.com/DungHieu2319/Day13-K3-Observability
-- Commit SHA cuối: [TODO: điền sau khi commit lần cuối — chạy `git log -1 --format=%H`]
+- Commit SHA cuối: `32791abb8069b31b36ac33c87fb4dbfbab55dde9`
 - Thành viên và vai trò:
   | STT | Họ và Tên | Mã Học Viên | Vai trò |
   |---|---|---|---|
